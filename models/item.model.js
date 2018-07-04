@@ -29,7 +29,6 @@ const schemaItem = new Schema({
 	timestamps: true
 })
 
-
 const Items    = mongoose.model('items', schemaItem)
 
 module.exports = Items

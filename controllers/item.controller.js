@@ -1,10 +1,10 @@
 const Item    = require('../models/item.model')
 const Storage = require('@google-cloud/storage')
 const storage = new Storage({
-	projectId:     process.env.GCLOUD_PROJECT,
-	keyFilename:   process.env.KEYFILE_PATH
+	projectId: process.env.GCLOUD_PROJECT,
+	keyFilename: process.env.KEYFILE_PATH
 })
-const bucket  = storage.bucket(process.env.CLOUD_BUCKET)
+const bucket = storage.bucket(process.env.CLOUD_BUCKET)
 
 module.exports = {
 	addItem(req, res) {
@@ -49,33 +49,6 @@ module.exports = {
 				})
 			})
 	},
-	findBySearch(req, res) {
-		const {
-			search
-		} = req.body
-		Item.find({
-			$or: [{
-					name: {
-						$regex: `${search}`
-					}
-				},
-				{
-					category: {
-						$regex: `${search}`
-					}
-				}
-			]
-		}).then(getProduct => {
-			res.status(200).json({
-				message: 'data was succesfuly got',
-				data:getProduct
-			})
-		}).catch(err => {
-			res.status(500).json({
-				message: err.message
-			})
-		})
-	},
 	findByCategory(req, res) {
 		let category = req.params.category;
 		Item.find({
@@ -92,8 +65,70 @@ module.exports = {
 			});
 		});
 	},
+	searchItem: (req, res) => {
+		let titleQuery = req.query.name
+		let upper = titleQuery.charAt(0).toUpperCase() + titleQuery.substr(1).toLowerCase();
+		Item.find({
+			name: {
+				$regex: '.*' + upper + '.*'
+			}
+		}, (err, item) => {
+			if (err) {
+				res.status(400).send({
+					message: 'failed to get item'
+				})
+			} else {
+				res.status(200).send({
+					message: 'item was succesfuly got',
+					data: item
+				})
+
+			}
+		})
+	},
+	searchCategory: (req, res) => {
+		let titleQuery = req.query.category
+		Item.find({
+			category: {
+				$regex: '.*' + titleQuery + '.*'
+			}
+		}, (err, item) => {
+			if (err) {
+				res.status(400).send({
+					message: 'failed to get item'
+				})
+			} else {
+				res.status(200).send({
+					message: 'item was succesfuly got',
+					data: item
+				})
+
+			}
+		})
+	},
 	updateItem(req, res) {
 		Item.findByIdAndUpdate(req.params.itemId, req.body)
+			.then(itemUpdate => {
+				res.status(200).json({
+					message: 'Success Update',
+					data: itemUpdate
+				})
+			})
+			.catch(err => {
+				res.status(400).json({
+					message: 'Fail to update',
+					data: err
+				})
+			})
+	},
+	updateItemStock(req, res) {
+		console.log(req.body, '====')
+		Item.findByIdAndUpdate(req.params.itemId, {
+			name: req.body.name,
+			price: req.body.price,
+			stock: req.body.stock,
+			category: req.body.category
+		})
 			.then(itemUpdate => {
 				res.status(200).json({
 					message: 'Success Update',

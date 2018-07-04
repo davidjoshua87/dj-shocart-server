@@ -1,9 +1,10 @@
 const {
   addItem,
   getListItem,
-  findByCategory,
-  findBySearch,
+  searchCategory,
+  searchItem,
   updateItem,
+  updateItemStock,
   deleteItem
 } = require('../controllers/item.controller')
 const router = require('express').Router(),
@@ -26,10 +27,10 @@ router.post('/upload', authentication, authorization,
 
 router.post('/', authentication, authorization, images.multer.single('image'), images.sendUploadToGCS, addItem)
 router.get('/view', getListItem)
-router.get('/search', findBySearch)
-router.get('/category', findByCategory)
+router.get('/search', searchItem)
+router.get('/category', searchCategory)
 router.put('/:itemId', authentication, authorization, updateItem)
-router.put('/update/:itemId', authentication, updateItem)
+router.put('/update/:itemId', authentication, updateItemStock)
 router.delete('/:itemId', authentication, authorization, deleteItem)
 
 module.exports = router;
