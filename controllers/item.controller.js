@@ -53,17 +53,19 @@ module.exports = {
 		let category = req.params.category;
 		Item.find({
 			category: category
-		}).then((items) => {
-			res.status(200).send({
-				message: 'Success find items by category',
-				data: items,
+		})
+			.then((items) => {
+				res.status(200).send({
+					message: 'Success find items by category',
+					data: items,
+				});
+			})
+			.catch((err) => {
+				res.status(400).send({
+					message: 'Fail to find by category',
+					data: err
+				});
 			});
-		}).catch((err) => {
-			res.status(400).send({
-				message: 'Fail to find by category',
-				data: err
-			});
-		});
 	},
 	searchItem: (req, res) => {
 		let titleQuery = req.query.name
@@ -74,7 +76,6 @@ module.exports = {
 			}
 		})
 			.then(item => {
-				console.log(item, 'datata>>>>>>')
 				res.status(200).json({
 					message: 'Item was succesfuly got',
 					data: item
@@ -95,7 +96,6 @@ module.exports = {
 			}
 		})
 			.then(item => {
-				console.log(item, 'datata>>>>>>')
 				res.status(200).json({
 					message: 'Item was succesfuly got',
 					data: item
