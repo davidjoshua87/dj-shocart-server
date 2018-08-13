@@ -1,4 +1,4 @@
-const Item    = require('../models/item.model')
+const Item = require('../models/item.model')
 const Storage = require('@google-cloud/storage')
 const storage = new Storage({
 	projectId: process.env.GCLOUD_PROJECT,
@@ -72,19 +72,20 @@ module.exports = {
 			name: {
 				$regex: '.*' + upper + '.*'
 			}
-		}, (err, item) => {
-			if (err) {
-				res.status(400).send({
-					message: 'failed to get item'
-				})
-			} else {
-				res.status(200).send({
-					message: 'item was succesfuly got',
+		})
+			.then(item => {
+				console.log(item, 'datata>>>>>>')
+				res.status(200).json({
+					message: 'Item was succesfuly got',
 					data: item
 				})
-
-			}
-		})
+			})
+			.catch(err => {
+				res.status(400).json({
+					message: 'Failed to get item',
+					data: err
+				})
+			})
 	},
 	searchCategory: (req, res) => {
 		let titleQuery = req.query.category
@@ -92,19 +93,20 @@ module.exports = {
 			category: {
 				$regex: '.*' + titleQuery + '.*'
 			}
-		}, (err, item) => {
-			if (err) {
-				res.status(400).send({
-					message: 'failed to get item'
-				})
-			} else {
-				res.status(200).send({
-					message: 'item was succesfuly got',
+		})
+			.then(item => {
+				console.log(item, 'datata>>>>>>')
+				res.status(200).json({
+					message: 'Item was succesfuly got',
 					data: item
 				})
-
-			}
-		})
+			})
+			.catch(err => {
+				res.status(400).json({
+					message: 'Failed to get item',
+					data: err
+				})
+			})
 	},
 	updateItem(req, res) {
 		Item.findByIdAndUpdate(req.params.itemId, req.body)
@@ -122,13 +124,12 @@ module.exports = {
 			})
 	},
 	updateItemStock(req, res) {
-		console.log(req.body, '====')
 		Item.findByIdAndUpdate(req.params.itemId, {
-			name: req.body.name,
-			price: req.body.price,
-			stock: req.body.stock,
-			category: req.body.category
-		})
+				name: req.body.name,
+				price: req.body.price,
+				stock: req.body.stock,
+				category: req.body.category
+			})
 			.then(itemUpdate => {
 				res.status(200).json({
 					message: 'Success Update',
